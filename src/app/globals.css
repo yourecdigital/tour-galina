@@ -1,26 +1,64 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  color-scheme: light;
+  --oktour-charcoal: #252525;
+  --oktour-slate: #475c8c;
+  --oktour-sand: #d9921d;
+  --oktour-cloud: #f2f4fa;
+  --oktour-deep: #121420;
+  --background: #f7f8fc;
+  --foreground: #101521;
 }
 
 @theme inline {
+  --font-sans: var(--font-manrope);
+  --font-mono: var(--font-geist-mono);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-accent: #d9921d;
+  --shadow-card: 0 25px 45px -25px rgb(18 20 32 / 0.35);
+  --radius-card: 28px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
 
 body {
-  background: var(--background);
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--font-sans), system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+  background-color: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--oktour-sand) 45%, white);
+  color: #0f1015;
+}
+
+.full-bleed {
+  position: relative;
+  left: 50%;
+  right: 50%;
+  width: 100vw;
+  margin-left: -50vw;
+  margin-right: -50vw;
+}
+
+@media (min-width: 1200px) {
+  .full-bleed {
+    border-radius: 40px;
+  }
 }
