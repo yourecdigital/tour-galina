@@ -23,6 +23,11 @@ export const metadata: Metadata = {
   description:
     "Премиальный тревел-сервис Oktour: авторские маршруты по России, Европе, Азии и Ближнему Востоку.",
   metadataBase: new URL("https://oktour.example.com"),
+  icons: {
+    icon: "/favicon.ico",
+    shortcut: "/favicon.ico",
+    apple: "/favicon.ico",
+  },
   keywords: [
     "Oktour",
     "Ok tour",

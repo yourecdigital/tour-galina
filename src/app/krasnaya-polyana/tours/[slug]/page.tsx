@@ -382,6 +382,8 @@ function BookingFormModal({
   onClose: () => void;
 }) {
   const [formData, setFormData] = useState({ full_name: "", phone: "", email: "", telegram: "" });
+  const [agreedToPrivacy, setAgreedToPrivacy] = useState(false);
+  const [agreedToOffer, setAgreedToOffer] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
@@ -390,6 +392,12 @@ function BookingFormModal({
     e.preventDefault();
     setLoading(true);
     setError("");
+
+    if (!agreedToPrivacy || !agreedToOffer) {
+      setError("Необходимо согласиться с политикой конфиденциальности и публичной офертой");
+      setLoading(false);
+      return;
+    }
 
     try {
       const res = await fetch("/api/bookings", {
@@ -522,6 +530,47 @@ function BookingFormModal({
                 />
               </div>
 
+              <div className="space-y-3">
+                <label className="flex items-start gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={agreedToPrivacy}
+                    onChange={(e) => setAgreedToPrivacy(e.target.checked)}
+                    className="mt-1 size-4 rounded border-[#475C8C]/20 text-[#475C8C] focus:ring-2 focus:ring-[#475C8C]"
+                  />
+                  <span className="text-sm text-[#4a4e65]">
+                    Я согласен(а) с{" "}
+                    <Link
+                      href="/privacy-policy"
+                      target="_blank"
+                      className="text-[#475C8C] hover:underline"
+                    >
+                      политикой конфиденциальности
+                    </Link>
+                    {" *"}
+                  </span>
+                </label>
+                <label className="flex items-start gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={agreedToOffer}
+                    onChange={(e) => setAgreedToOffer(e.target.checked)}
+                    className="mt-1 size-4 rounded border-[#475C8C]/20 text-[#475C8C] focus:ring-2 focus:ring-[#475C8C]"
+                  />
+                  <span className="text-sm text-[#4a4e65]">
+                    Я согласен(а) с{" "}
+                    <Link
+                      href="/public-offer"
+                      target="_blank"
+                      className="text-[#475C8C] hover:underline"
+                    >
+                      публичной офертой
+                    </Link>
+                    {" *"}
+                  </span>
+                </label>
+              </div>
+
               <div className="flex gap-4 pt-4">
                 <button
                   type="button"
@@ -532,8 +581,8 @@ function BookingFormModal({
                 </button>
                 <button
                   type="submit"
-                  disabled={loading}
-                  className="flex-1 rounded-full bg-[#475C8C] px-4 py-3 text-sm font-medium text-white hover:bg-[#475C8C]/90 disabled:opacity-50"
+                  disabled={loading || !agreedToPrivacy || !agreedToOffer}
+                  className="flex-1 rounded-full bg-[#475C8C] px-4 py-3 text-sm font-medium text-white hover:bg-[#475C8C]/90 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {loading ? "Отправка..." : "Отправить заявку"}
                 </button>

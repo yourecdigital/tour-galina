@@ -14,6 +14,8 @@ export default function CheckoutPage() {
     email: "",
     telegram: "",
   });
+  const [agreedToPrivacy, setAgreedToPrivacy] = useState(false);
+  const [agreedToOffer, setAgreedToOffer] = useState(false);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
@@ -37,6 +39,12 @@ export default function CheckoutPage() {
 
     if (!formData.full_name || !formData.phone) {
       setError("Пожалуйста, заполните имя и телефон");
+      setLoading(false);
+      return;
+    }
+
+    if (!agreedToPrivacy || !agreedToOffer) {
+      setError("Необходимо согласиться с политикой конфиденциальности и публичной офертой");
       setLoading(false);
       return;
     }
@@ -250,9 +258,50 @@ export default function CheckoutPage() {
               />
             </div>
 
+            <div className="space-y-3">
+              <label className="flex items-start gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={agreedToPrivacy}
+                  onChange={(e) => setAgreedToPrivacy(e.target.checked)}
+                  className="mt-1 size-4 rounded border-[#475C8C]/20 text-[#475C8C] focus:ring-2 focus:ring-[#475C8C]"
+                />
+                <span className="text-sm text-[#4a4e65]">
+                  Я согласен(а) с{" "}
+                  <Link
+                    href="/privacy-policy"
+                    target="_blank"
+                    className="text-[#475C8C] hover:underline"
+                  >
+                    политикой конфиденциальности
+                  </Link>
+                  {" *"}
+                </span>
+              </label>
+              <label className="flex items-start gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={agreedToOffer}
+                  onChange={(e) => setAgreedToOffer(e.target.checked)}
+                  className="mt-1 size-4 rounded border-[#475C8C]/20 text-[#475C8C] focus:ring-2 focus:ring-[#475C8C]"
+                />
+                <span className="text-sm text-[#4a4e65]">
+                  Я согласен(а) с{" "}
+                  <Link
+                    href="/public-offer"
+                    target="_blank"
+                    className="text-[#475C8C] hover:underline"
+                  >
+                    публичной офертой
+                  </Link>
+                  {" *"}
+                </span>
+              </label>
+            </div>
+
             <button
               type="submit"
-              disabled={loading || cart.length === 0}
+              disabled={loading || cart.length === 0 || !agreedToPrivacy || !agreedToOffer}
               className="flex w-full items-center justify-center gap-2 rounded-full bg-[#475C8C] px-6 py-3 text-base font-medium text-white transition hover:bg-[#475C8C]/90 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? (

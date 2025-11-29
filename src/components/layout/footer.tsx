@@ -27,10 +27,26 @@ export function SiteFooter() {
             находится в Сочи, откуда команда курирует все направления и
             поддерживает клиентов лично.
           </p>
-          <p className="text-sm text-white/50">
-            © {new Date().getFullYear()} Oktour • Офис в Сочи. Все права
-            защищены.
-          </p>
+          <div className="space-y-2">
+            <p className="text-sm text-white/50">
+              © {new Date().getFullYear()} Oktour • Офис в Сочи. Все права
+              защищены.
+            </p>
+            <div className="flex flex-wrap gap-4 text-xs text-white/60">
+              <Link
+                href="/privacy-policy"
+                className="hover:text-white/80 transition-colors"
+              >
+                Политика конфиденциальности
+              </Link>
+              <Link
+                href="/public-offer"
+                className="hover:text-white/80 transition-colors"
+              >
+                Публичная оферта
+              </Link>
+            </div>
+          </div>
         </div>
         <div className="grid gap-6 md:justify-end">
           <div>
