@@ -4,7 +4,8 @@ import { Manrope, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { SiteHeader } from "@/components/layout/header";
 import { SiteFooter } from "@/components/layout/footer";
-import { TourvisorLoader } from "@/components/tourvisor-loader";
+import { Cart } from "@/components/cart/cart";
+import { UnifiedPreloader } from "@/components/preloader/unified-preloader";
 
 const manrope = Manrope({
   variable: "--font-manrope",
@@ -48,21 +49,16 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ru">
-      <head>
-        <Script
-          src="https://tourvisor.ru/module/init.js"
-          strategy="beforeInteractive"
-        />
-      </head>
       <body
         className={`${manrope.variable} ${geistMono.variable} antialiased bg-[var(--background)] text-[var(--foreground)]`}
       >
+        <UnifiedPreloader />
         <SiteHeader />
-        <TourvisorLoader />
         <main className="mx-auto w-full max-w-6xl px-4 py-10 lg:px-6 lg:py-16">
           {children}
         </main>
         <SiteFooter />
+        <Cart />
         <Script
           id="oktour-schema"
           type="application/ld+json"

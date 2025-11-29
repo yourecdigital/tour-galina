@@ -39,3 +39,11 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# database
+/data/tours.db
+/data/tours.db-journal
+
+# uploaded files
+/public/uploads/*
+!/public/uploads/.gitkeep
