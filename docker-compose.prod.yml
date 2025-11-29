@@ -1,0 +1,30 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: tour-galina-app
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      # Монтируем папку с базой данных для сохранения данных
+      - ./data:/app/data
+      # Монтируем папку с загруженными файлами
+      - ./public/uploads:/app/public/uploads
+    networks:
+      - oktour-network
+    # Не публикуем порт наружу, только для nginx
+    expose:
+      - "3000"
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  oktour-network:
+    driver: bridge
+

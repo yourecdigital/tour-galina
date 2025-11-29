@@ -1,0 +1,25 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: tour-galina-app
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN:-8304880903:AAHxEr9U4Ca6E0E-IGxyVMzDL56qocRihWg}
+      - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID:--1003143468391}
+    volumes:
+      # Монтируем папку с базой данных для сохранения данных
+      - ./data:/app/data
+      # Монтируем папку с загруженными файлами
+      - ./public/uploads:/app/public/uploads
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
