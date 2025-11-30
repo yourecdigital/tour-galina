@@ -23,7 +23,7 @@ cd oktour
 ```bash
 mkdir -p data public/uploads/photo public/uploads/video public/kp
 chmod -R 777 data
-chmod -R 755 public/uploads public/kp
+chmod -R 777 public/uploads public/kp
 ```
 
 ### 3. Создайте .env файл:

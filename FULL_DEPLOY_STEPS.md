@@ -98,16 +98,19 @@ ls -la public/kp
 # Установите права 777 для папки data (для работы базы данных)
 chmod -R 777 data
 
-# Установите права для папок с загрузками
-chmod -R 755 public/uploads
-chmod -R 755 public/kp
+# Установите права 777 для папок с загрузками (для записи файлов)
+chmod -R 777 public/uploads
+chmod -R 777 public/kp
 
 # Проверьте права
 ls -ld data
 # Должно быть: drwxrwxrwx (777)
 
 ls -ld public/uploads
-# Должно быть: drwxr-xr-x (755)
+# Должно быть: drwxrwxrwx (777)
+
+ls -ld public/kp
+# Должно быть: drwxrwxrwx (777)
 ```
 
 ## Шаг 7: Создание .env файла

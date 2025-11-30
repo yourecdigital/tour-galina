@@ -81,9 +81,9 @@ fi
 # Создание необходимых директорий
 mkdir -p data public/uploads/photo public/uploads/video public/kp
 
-# Установка правильных прав доступа (важно для базы данных!)
+# Установка правильных прав доступа (важно для базы данных и загрузки файлов!)
 chmod -R 777 data
-chmod -R 755 public/uploads public/kp
+chmod -R 777 public/uploads public/kp
 chown -R $USER:$USER public/uploads public/kp 2>/dev/null || true
 
 # Сборка образа
