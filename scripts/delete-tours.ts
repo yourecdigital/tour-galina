@@ -64,3 +64,4 @@ console.log("  npm run delete-tours -- --id=1         (удалить тур с 
 process.exit(0);
 
 
+

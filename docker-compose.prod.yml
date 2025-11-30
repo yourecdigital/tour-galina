@@ -12,11 +12,13 @@ services:
       - ./data:/app/data
       # Монтируем папку с загруженными файлами
       - ./public/uploads:/app/public/uploads
+      # Монтируем папку с hero видео
+      - ./public/kp:/app/public/kp
     networks:
       - oktour-network
-    # Не публикуем порт наружу, только для nginx
-    expose:
-      - "3000"
+    # Публикуем порт на хост для Nginx
+    ports:
+      - "3000:3000"
     healthcheck:
       test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000"]
       interval: 30s
@@ -27,4 +29,5 @@ services:
 networks:
   oktour-network:
     driver: bridge
+
 

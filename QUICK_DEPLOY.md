@@ -44,7 +44,7 @@ sudo ./deploy.sh
 
 ### Шаг 1: Установка зависимостей
 ```bash
-apt update && apt upgrade -y
+ls
 curl -fsSL https://get.docker.com -o get-docker.sh && sh get-docker.sh
 apt install docker-compose nginx certbot python3-certbot-nginx -y
 ```
@@ -67,19 +67,60 @@ TELEGRAM_BOT_TOKEN=8304880903:AAHxEr9U4Ca6E0E-IGxyVMzDL56qocRihWg
 TELEGRAM_CHAT_ID=-1003143468391
 ```
 
+### Шаг 3.5: Создание папок для загрузок
+```bash
+# Создайте необходимые папки
+mkdir -p public/uploads/photo public/uploads/video public/kp
+
+# Установите правильные права доступа
+chmod -R 755 public/uploads public/kp
+```
+
 ### Шаг 4: Настройка Nginx
 ```bash
+# Установите Nginx (если еще не установлен)
+apt install nginx -y
+
+# Скопируйте конфигурацию
 cp nginx.conf /etc/nginx/sites-available/oktour.travel
-ln -s /etc/nginx/sites-available/oktour.travel /etc/nginx/sites-enabled/
-rm /etc/nginx/sites-enabled/default
+
+# Создайте симлинк
+ln -sf /etc/nginx/sites-available/oktour.travel /etc/nginx/sites-enabled/
+
+# Удалите дефолтную конфигурацию
+rm -f /etc/nginx/sites-enabled/default
+
+# Проверьте конфигурацию
 nginx -t
+
+# Запустите Nginx (если не запущен) или перезагрузите
+systemctl start nginx
+systemctl enable nginx  # Автозапуск при загрузке системы
 systemctl reload nginx
+
+# Проверьте статус
+systemctl status nginx
 ```
 
 ### Шаг 5: Получение SSL сертификата
+
+**⚠️ ВАЖНО: SSL можно получить ТОЛЬКО после настройки DNS!**
+
+Убедитесь, что DNS настроен:
+```bash
+dig oktour.travel +short
+# Должно вернуть: 185.179.191.27
+```
+
+Если DNS настроен, получите SSL:
 ```bash
 certbot --nginx -d oktour.travel -d www.oktour.travel
 ```
+
+**Если DNS еще не настроен:**
+- Используйте сайт по HTTP: http://185.179.191.27
+- Или настройте hosts файл (см. FIX_DNS.md)
+- После настройки DNS получите SSL сертификат
 
 ### Шаг 6: Запуск приложения
 ```bash

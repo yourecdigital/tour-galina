@@ -79,7 +79,12 @@ EOF
 fi
 
 # Создание необходимых директорий
-mkdir -p data public/uploads
+mkdir -p data public/uploads/photo public/uploads/video public/kp
+
+# Установка правильных прав доступа (важно для базы данных!)
+chmod -R 777 data
+chmod -R 755 public/uploads public/kp
+chown -R $USER:$USER public/uploads public/kp 2>/dev/null || true
 
 # Сборка образа
 echo "Сборка Docker образа..."
@@ -189,4 +194,5 @@ echo "   Перезапуск: docker-compose -f docker-compose.prod.yml restart
 echo "   Остановка: docker-compose -f docker-compose.prod.yml down"
 echo "   Статус: docker-compose -f docker-compose.prod.yml ps"
 echo ""
+
 

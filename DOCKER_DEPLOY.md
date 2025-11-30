@@ -128,3 +128,4 @@ chmod 755 public/uploads
 4. Настроить мониторинг и логирование
 5. Использовать managed database вместо SQLite
 
+

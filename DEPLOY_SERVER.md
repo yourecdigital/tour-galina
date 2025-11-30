@@ -476,3 +476,4 @@ netstat -tulpn | grep :443
 - Логи Nginx: `/var/log/nginx/oktour.error.log`
 - Статус сервисов: `systemctl status nginx docker`
 
+

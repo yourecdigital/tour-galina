@@ -36,7 +36,7 @@ COPY --from=base /app/.next/standalone ./
 COPY --from=base /app/.next/static ./.next/static
 
 # Создаем директории для данных
-RUN mkdir -p /app/data /app/public/uploads
+RUN mkdir -p /app/data /app/public/uploads /app/public/kp
 RUN chown -R nextjs:nodejs /app
 
 USER nextjs
