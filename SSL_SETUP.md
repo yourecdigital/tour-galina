@@ -37,8 +37,20 @@ apt install certbot python3-certbot-nginx -y
 ```
 
 **Получите SSL сертификат:**
+
+**Вариант 1: С указанием email (рекомендуется):**
+```bash
+# Замените your-email@example.com на ваш реальный email
+certbot --nginx -d oktour.travel -d www.oktour.travel --email your-email@example.com --agree-tos --non-interactive --redirect
+```
+
+**Вариант 2: Интерактивно (Certbot спросит email):**
 ```bash
 certbot --nginx -d oktour.travel -d www.oktour.travel
+# Certbot спросит:
+# 1. Email адрес (для уведомлений) - введите ваш email
+# 2. Согласие с условиями - введите `A` (Agree)
+# 3. Редирект HTTP на HTTPS - выберите `2` (Redirect)
 ```
 
 Certbot автоматически:
@@ -46,10 +58,21 @@ Certbot автоматически:
 - ✅ Настроит Nginx для работы с HTTPS
 - ✅ Настроит автоматическое обновление сертификата
 
-**В процессе Certbot спросит:**
-1. Email адрес (для уведомлений) - введите ваш email
-2. Согласие с условиями - введите `A` (Agree)
-3. Редирект HTTP на HTTPS - выберите `2` (Redirect)
+### Изменение email адреса
+
+Если нужно изменить email после получения сертификата:
+
+```bash
+# Способ 1: Измените в конфигурации
+nano /etc/letsencrypt/cli.ini
+# Добавьте или измените строку: email = your-email@example.com
+
+# Способ 2: При обновлении сертификата
+certbot renew --email your-new-email@example.com --agree-tos
+
+# Способ 3: Перевыпустите сертификат
+certbot --nginx -d oktour.travel -d www.oktour.travel --email your-new-email@example.com --force-renewal --agree-tos --non-interactive
+```
 
 ### 3. Проверка SSL
 
