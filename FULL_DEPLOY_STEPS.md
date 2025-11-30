@@ -34,8 +34,25 @@ ss -tulpn | grep -E ":80|:3000"
 # Обновите систему
 apt update && apt upgrade -y
 
+# Проверьте, что уже установлено
+docker --version 2>/dev/null && echo "Docker уже установлен" || echo "Docker не установлен"
+docker-compose --version 2>/dev/null && echo "Docker Compose уже установлен" || echo "Docker Compose не установлен"
+
 # Установите необходимые пакеты
-apt install -y docker.io docker-compose nginx git curl
+# Если Docker уже установлен, установите только недостающие пакеты
+if command -v docker &> /dev/null; then
+    echo "Docker уже установлен, пропускаем установку docker.io"
+    # Установите только недостающие пакеты
+    apt install -y nginx git curl
+    # Проверьте docker-compose
+    if ! command -v docker-compose &> /dev/null; then
+        echo "Устанавливаем docker-compose..."
+        apt install -y docker-compose-plugin || pip3 install docker-compose || curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose && chmod +x /usr/local/bin/docker-compose
+    fi
+else
+    echo "Устанавливаем Docker и другие пакеты..."
+    apt install -y docker.io docker-compose nginx git curl
+fi
 
 # Проверьте установку
 docker --version
