@@ -245,21 +245,53 @@ curl http://185.179.191.27
 
 ## Шаг 14: Получение SSL сертификата (после настройки DNS)
 
+**ВАЖНО:** Перед получением SSL сертификата убедитесь, что DNS записи настроены:
+
+```bash
+# Проверьте DNS записи
+nslookup oktour.travel
+nslookup www.oktour.travel
+
+# Оба должны возвращать: 185.179.191.27
+```
+
+### Вариант 1: Если DNS для www настроен
+
 ```bash
 # Установите Certbot
 apt install -y certbot python3-certbot-nginx
 
-# Получите SSL сертификат
-# Укажите ваш email адрес (замените your-email@example.com на реальный email)
+# Получите SSL сертификат для обоих доменов
+# Замените your-email@example.com на ваш реальный email
 certbot --nginx -d oktour.travel -d www.oktour.travel --email your-email@example.com --agree-tos --non-interactive --redirect
+```
 
-# Или интерактивно (Certbot спросит email):
-# certbot --nginx -d oktour.travel -d www.oktour.travel
+### Вариант 2: Если DNS для www НЕ настроен (только основной домен)
+
+```bash
+# Установите Certbot
+apt install -y certbot python3-certbot-nginx
+
+# Получите SSL сертификат только для основного домена
+certbot --nginx -d oktour.travel --email your-email@example.com --agree-tos --non-interactive --redirect
+
+# Позже, когда настроите DNS для www, добавьте его:
+# certbot --nginx -d www.oktour.travel --expand --email your-email@example.com --agree-tos --non-interactive
+```
+
+### Вариант 3: Интерактивный режим
+
+```bash
+certbot --nginx -d oktour.travel -d www.oktour.travel
 # Certbot спросит:
 # 1. Email адрес - введите ваш email
 # 2. Согласие с условиями - введите A (Agree)
 # 3. Редирект HTTP на HTTPS - выберите 2 (Redirect)
+```
 
+### После получения сертификата:
+
+```bash
 # Проверьте сертификаты
 certbot certificates
 

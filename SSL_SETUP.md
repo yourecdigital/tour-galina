@@ -36,15 +36,34 @@ apt update
 apt install certbot python3-certbot-nginx -y
 ```
 
+**ВАЖНО:** Перед получением SSL сертификата убедитесь, что DNS записи настроены:
+
+```bash
+# Проверьте DNS записи
+nslookup oktour.travel
+nslookup www.oktour.travel
+
+# Оба должны возвращать: 185.179.191.27
+```
+
 **Получите SSL сертификат:**
 
-**Вариант 1: С указанием email (рекомендуется):**
+**Вариант 1: Если DNS для www настроен (с указанием email):**
 ```bash
 # Замените your-email@example.com на ваш реальный email
 certbot --nginx -d oktour.travel -d www.oktour.travel --email your-email@example.com --agree-tos --non-interactive --redirect
 ```
 
-**Вариант 2: Интерактивно (Certbot спросит email):**
+**Вариант 2: Если DNS для www НЕ настроен (только основной домен):**
+```bash
+# Получите сертификат только для основного домена
+certbot --nginx -d oktour.travel --email your-email@example.com --agree-tos --non-interactive --redirect
+
+# Позже, когда настроите DNS для www, добавьте его:
+# certbot --nginx -d www.oktour.travel --expand --email your-email@example.com --agree-tos --non-interactive
+```
+
+**Вариант 3: Интерактивно (Certbot спросит email):**
 ```bash
 certbot --nginx -d oktour.travel -d www.oktour.travel
 # Certbot спросит:
