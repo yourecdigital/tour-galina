@@ -1,31 +1,8 @@
-import { Ship, Anchor, Waves } from "lucide-react";
-import { LeadForm } from "@/components/sections/lead-form";
-
-const cruiseTypes = [
-  {
-    icon: Ship,
-    title: "Морские круизы",
-    copy: "Средиземное море, Норвежские фьорды, Карибы — комфортабельные лайнеры и экскурсионные программы.",
-  },
-  {
-    icon: Anchor,
-    title: "Речные круизы",
-    copy: "Волга, Нева, Енисей. Круизы по России с остановками в исторических городах.",
-  },
-  {
-    icon: Waves,
-    title: "Яхтинг и чартеры",
-    copy: "Приватные яхты, катера, парусники для индивидуальных и корпоративных программ.",
-  },
-];
+import Script from "next/script";
 
 export default function CruisesPage() {
   return (
     <div className="space-y-16">
-      <section className="full-bleed -mt-10 border border-[#475C8C]/20 bg-white p-0 shadow-[var(--shadow-card)] lg:-mt-16">
-        <div className="tv-image-slider tv-moduleid-9986122" />
-      </section>
-
       <header className="space-y-4 rounded-[36px] border border-[#475C8C]/20 bg-white p-8 shadow-[var(--shadow-card)]">
         <p className="text-sm uppercase tracking-[0.4em] text-[#475C8C]/70">
           Круизы
@@ -34,48 +11,52 @@ export default function CruisesPage() {
           Морские и речные круизы по всему миру
         </h1>
         <p className="text-base text-[#4a4e65]">
-          Подбираем круизы на лайнерах премиум-класса, речные маршруты по России,
-          приватные яхты и чартеры. Все варианты с актуальными ценами и наличием.
+          Подбираем круизы на лайнерах премиум-класса, речные маршруты по
+          России, приватные яхты и чартеры. Все варианты с актуальными ценами и
+          наличием.
         </p>
-        <div className="mt-4">
-          <div className="tv-free-button tv-moduleid-9986116" />
-        </div>
       </header>
 
-      <section className="grid gap-6 md:grid-cols-3">
-        {cruiseTypes.map((type) => (
-          <article
-            key={type.title}
-            className="rounded-[30px] border border-[#475C8C]/15 bg-gradient-to-br from-white to-[#eef2ff] p-6 shadow-[var(--shadow-card)]"
-          >
-            <type.icon className="size-10 text-[#475C8C]" />
-            <h2 className="mt-4 text-xl font-semibold text-[#121420]">
-              {type.title}
-            </h2>
-            <p className="mt-2 text-sm text-[#4a4e65]">{type.copy}</p>
-          </article>
-        ))}
+      {/* Виджет круизного оператора */}
+      <section className="rounded-[32px] border border-[#475C8C]/20 bg-white p-4 shadow-[var(--shadow-card)]">
+        <div id="awidget" />
       </section>
 
-      <section className="space-y-4">
-        <div>
-          <p className="text-sm uppercase tracking-[0.4em] text-[#475C8C]/70">
-            Подбор круизов
-          </p>
-          <h2 className="text-2xl font-semibold text-[#121420]">
-            Онлайн-поиск круизов
-          </h2>
-          <p className="mt-1 text-sm text-[#4a4e65]">
-            Используйте форму ниже для поиска круизов по направлениям, датам и
-            категориям кают.
-          </p>
-        </div>
-        <div className="rounded-[32px] border border-[#475C8C]/20 bg-white/80 p-4">
-          <div className="tv-search-form tv-moduleid-9974431" />
-        </div>
+      {/* Завершающий блок с пояснением */}
+      <section className="rounded-[32px] border border-[#475C8C]/15 bg-gradient-to-br from-white to-[#f7f8fc] p-8 shadow-[var(--shadow-card)]">
+        <p className="text-sm uppercase tracking-[0.4em] text-[#475C8C]/70">
+          Как это работает
+        </p>
+        <h2 className="mt-3 text-2xl font-semibold text-[#121420] md:text-3xl">
+          Мы сопровождаем вас на каждом этапе путешествия
+        </h2>
+        <p className="mt-3 text-base text-[#4a4e65]">
+          Через модуль выше вы видите актуальные предложения круизного оператора
+          в режиме реального времени. После подбора и предварительного расчёта
+          мы берём на себя все детали: подтверждение брони, оформление документов,
+          подбор перелётов и помощь с любыми вопросами до и во время круиза.
+        </p>
+        <p className="mt-3 text-sm text-[#4a4e65]">
+          Если вы хотите обсудить индивидуальный маршрут, VIP-сервис или
+          забронировать несколько кают для группы — свяжитесь с нами через раздел
+          «Контакты», и персональный менеджер подберёт оптимальное решение.
+        </p>
       </section>
 
-      <LeadForm title="Нужна помощь с выбором круиза?" />
+      <Script id="cruise-widget-config" strategy="afterInteractive">
+        {`
+          window.awidgetInfo = {
+            host: 'https://cruisenavigator.ru',
+            agentId: '9921db41-e59c-4f4f-8c7d-556fbb94b619',
+            background: '#ffffff'
+          };
+        `}
+      </Script>
+      <Script
+        id="cruise-widget-runner"
+        src="https://cruisenavigator.ru/widget/runner.js"
+        strategy="afterInteractive"
+      />
     </div>
   );
 }

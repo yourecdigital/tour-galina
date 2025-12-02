@@ -477,3 +477,6 @@ netstat -tulpn | grep :443
 - Статус сервисов: `systemctl status nginx docker`
 
 
+
+
+

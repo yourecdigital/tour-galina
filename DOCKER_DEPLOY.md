@@ -129,3 +129,6 @@ chmod 755 public/uploads
 5. Использовать managed database вместо SQLite
 
 
+
+
+

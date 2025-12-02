@@ -170,17 +170,17 @@ export default function KrasnayaPolyanaPage() {
       {/* Tours Section */}
       {tours.length > 0 && (
         <section className="space-y-6">
-          <div>
-            <p className="text-sm uppercase tracking-[0.4em] text-[#475C8C]/70">
+        <div>
+          <p className="text-sm uppercase tracking-[0.4em] text-[#475C8C]/70">
               Наши туры
-            </p>
-            <h2 className="text-2xl font-semibold text-[#121420]">
+          </p>
+          <h2 className="text-2xl font-semibold text-[#121420]">
               Популярные туры на Красную Поляну
-            </h2>
-            <p className="mt-1 text-sm text-[#4a4e65]">
+          </h2>
+          <p className="mt-1 text-sm text-[#4a4e65]">
               Выберите идеальный тур для вашего отдыха
-            </p>
-          </div>
+          </p>
+        </div>
 
           {/* Category Filter */}
           {categories.length > 0 && (
@@ -300,9 +300,9 @@ export default function KrasnayaPolyanaPage() {
           ) : (
             <div className="text-center py-12 text-[#4a4e65]">
               Туры не найдены. Попробуйте выбрать другую категорию.
-            </div>
+        </div>
           )}
-        </section>
+      </section>
       )}
 
       {/* Add to Cart Modal */}

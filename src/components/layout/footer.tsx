@@ -3,9 +3,9 @@ import Link from "next/link";
 import { NAV_LINKS } from "@/data/navigation";
 
 const socialLinks = [
-  { label: "Instagram", href: "https://instagram.com" },
-  { label: "YouTube", href: "https://youtube.com" },
-  { label: "Telegram", href: "https://t.me" },
+  { label: "ВКонтакте", href: "https://vk.com/oktourtravel" },
+  { label: "Instagram", href: "https://instagram.com/oktourtravel_" },
+  { label: "Telegram", href: "https://t.me/oktourtravel" },
 ];
 
 export function SiteFooter() {

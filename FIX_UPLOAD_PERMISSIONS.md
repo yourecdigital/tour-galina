@@ -86,3 +86,6 @@ docker exec tour-galina-app rm /app/public/uploads/test.txt
 # Если команда выполнилась без ошибок - права настроены правильно
 ```
 
+
+
+

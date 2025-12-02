@@ -6,6 +6,7 @@ import { SiteHeader } from "@/components/layout/header";
 import { SiteFooter } from "@/components/layout/footer";
 import { Cart } from "@/components/cart/cart";
 import { UnifiedPreloader } from "@/components/preloader/unified-preloader";
+import { TourvisorLoader } from "@/components/tourvisor-loader";
 
 const manrope = Manrope({
   variable: "--font-manrope",
@@ -58,12 +59,20 @@ export default function RootLayout({
         className={`${manrope.variable} ${geistMono.variable} antialiased bg-[var(--background)] text-[var(--foreground)]`}
       >
         <UnifiedPreloader />
+        {/* Tourvisor: перезапуск модулей при смене страниц */}
+        <TourvisorLoader />
         <SiteHeader />
         <main className="mx-auto w-full max-w-6xl px-4 py-10 lg:px-6 lg:py-16">
           {children}
         </main>
         <SiteFooter />
         <Cart />
+        {/* Tourvisor: базовый инициализирующий скрипт, обязателен для работы виджетов */}
+        <Script
+          id="tourvisor-init"
+          src="https://tourvisor.ru/module/init.js"
+          strategy="beforeInteractive"
+        />
         <Script
           id="oktour-schema"
           type="application/ld+json"
