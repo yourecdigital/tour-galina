@@ -5,22 +5,22 @@ const contacts = [
   {
     icon: Phone,
     label: "Телефон / WhatsApp",
-    value: "+7 499 123 45 67",
+    value: "+7 918 919 77 73",
   },
   {
     icon: Mail,
     label: "E-mail",
-    value: "hello@oktour.global",
+    value: "oktourtravel@yandex.ru",
   },
   {
     icon: MapPin,
     label: "Офисы",
-    value: "Сочи • ул. Воронова, 12",
+    value: "ПГТ Красная поляна • Ул. Калиновая Д. 18 корпус 4",
   },
   {
     icon: Clock,
     label: "График",
-    value: "Пн-Пт 10:00—20:00, Сб 11:00—16:00",
+    value: "8:00 - 20:00 ежедневно",
   },
 ];
 

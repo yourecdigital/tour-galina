@@ -41,7 +41,7 @@ export default function AdminPage() {
   const [authenticated, setAuthenticated] = useState<boolean | null>(null);
   const [tours, setTours] = useState<Tour[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
-  const [activeTab, setActiveTab] = useState<"tours" | "categories" | "hero-video" | "hero-video-home">("tours");
+  const [activeTab, setActiveTab] = useState<"tours" | "categories" | "hero-video" | "hero-video-home" | "hero-video-cruises">("tours");
   const [showTourForm, setShowTourForm] = useState(false);
   const [showCategoryForm, setShowCategoryForm] = useState(false);
   const [editingTour, setEditingTour] = useState<Tour | null>(null);
@@ -207,6 +207,16 @@ export default function AdminPage() {
             }`}
           >
             Шапка Главная
+          </button>
+          <button
+            onClick={() => setActiveTab("hero-video-cruises")}
+            className={`flex-1 rounded-[16px] px-4 py-3 text-sm font-medium transition-colors ${
+              activeTab === "hero-video-cruises"
+                ? "bg-[#475C8C] text-white"
+                : "text-[#475C8C] hover:bg-[#475C8C]/10"
+            }`}
+          >
+            Шапка Круизы
           </button>
         </div>
 
@@ -405,6 +415,11 @@ export default function AdminPage() {
         {/* Hero Video Home Tab */}
         {activeTab === "hero-video-home" && (
           <HeroVideoManager apiEndpoint="/api/hero-video-home" title="Управление шапкой главной страницы" />
+        )}
+
+        {/* Hero Video Cruises Tab */}
+        {activeTab === "hero-video-cruises" && (
+          <HeroVideoManager apiEndpoint="/api/hero-video-cruises" title="Управление шапкой страницы круизов" />
         )}
 
         {/* Delete Confirmation Modal */}

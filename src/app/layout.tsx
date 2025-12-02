@@ -90,13 +90,13 @@ export default function RootLayout({
               "Oktour — международное туристическое агентство из Сочи. Поиск туров, горящие предложения, VIP-отдых.",
             address: {
               "@type": "PostalAddress",
-              streetAddress: "ул. Воронова, 12",
-              addressLocality: "Сочи",
+              streetAddress: "Ул. Калиновая Д. 18 корпус 4",
+              addressLocality: "ПГТ Красная поляна",
               addressCountry: "RU",
             },
             contactPoint: {
               "@type": "ContactPoint",
-              telephone: "+7-499-123-45-67",
+              telephone: "+7-918-919-77-73",
               contactType: "customer service",
               availableLanguage: ["ru", "en"],
             },

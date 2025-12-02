@@ -113,15 +113,17 @@ export function Preloader() {
       <div className="flex flex-col items-center justify-center px-4">
         {/* Logo */}
         <div className="mb-6 flex items-center justify-center">
-          <Image
-            src="/Preloader/preload.gif"
-            alt="Loading"
-            width={120}
-            height={120}
-            className="h-24 w-24 md:h-32 md:w-32"
-            unoptimized
-            priority
-          />
+          <div className="h-[200px] w-[200px] md:h-[192px] md:w-[192px]">
+            <Image
+              src="/Preloader/preload.gif"
+              alt="Loading"
+              width={200}
+              height={200}
+              className="h-full w-full object-contain"
+              unoptimized
+              priority
+            />
+          </div>
         </div>
 
         {/* Slogan */}

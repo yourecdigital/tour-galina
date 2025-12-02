@@ -26,6 +26,27 @@ export default function RussiaPage() {
         <div className="tv-image-slider tv-moduleid-9986114" />
       </section>
 
+      <section className="space-y-4">
+        <div>
+          <p className="text-sm uppercase tracking-[0.4em] text-[#475C8C]/70">
+            Горячие предложения
+          </p>
+          <h2 className="text-2xl font-semibold text-[#121420]">
+            Онлайн-виджет
+          </h2>
+          <p className="mt-1 text-sm text-[#4a4e65]">
+            Прямое подключение к туроператору: клиенты видят актуальные цены и
+            могут фильтровать туры по России в режиме онлайн.
+          </p>
+        </div>
+        <div className="rounded-[32px] border border-[#475C8C]/20 bg-white/80 p-4">
+          <div
+            className="tv-search-form tv-moduleid-9974431"
+            tv-country="47"
+          />
+        </div>
+      </section>
+
       <header className="space-y-4 rounded-[36px] border border-[#475C8C]/20 bg-white p-8 shadow-[var(--shadow-card)]">
         <p className="text-sm uppercase tracking-[0.4em] text-[#475C8C]/70">
           Туры по России
@@ -56,27 +77,6 @@ export default function RussiaPage() {
             <p className="mt-2 text-sm text-[#4a4e65]">{region.copy}</p>
           </article>
         ))}
-      </section>
-
-      <section className="space-y-4">
-        <div>
-          <p className="text-sm uppercase tracking-[0.4em] text-[#475C8C]/70">
-            Горячие предложения
-          </p>
-          <h2 className="text-2xl font-semibold text-[#121420]">
-            Онлайн-виджет
-          </h2>
-          <p className="mt-1 text-sm text-[#4a4e65]">
-            Прямое подключение к туроператору: клиенты видят актуальные цены и
-            могут фильтровать туры по России в режиме онлайн.
-          </p>
-        </div>
-        <div className="rounded-[32px] border border-[#475C8C]/20 bg-white/80 p-4">
-          <div
-            className="tv-search-form tv-moduleid-9974431"
-            tv-country="47"
-          />
-        </div>
       </section>
 
       <LeadForm title="Расскажите, что хотите увидеть в России" />

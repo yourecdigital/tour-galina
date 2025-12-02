@@ -121,7 +121,7 @@ export default function Home() {
         <div 
           className="absolute inset-0 pointer-events-none z-[5]"
           style={{
-            background: 'linear-gradient(to bottom, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.7) 30%, rgba(0, 0, 0, 0.5) 50%, rgba(0, 0, 0, 0.3) 70%, rgba(0, 0, 0, 0.1) 85%, #f7f8fc 100%)'
+            background: 'linear-gradient(to bottom, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.85) 30%, rgba(0, 0, 0, 0.7) 50%, rgba(0, 0, 0, 0.5) 70%, rgba(0, 0, 0, 0.2) 85%, #f7f8fc 100%)'
           }}
         />
 
@@ -129,15 +129,16 @@ export default function Home() {
         <div className="absolute inset-0 flex items-center justify-center z-10">
           <div className="text-center px-4 max-w-4xl">
             <p className="text-sm md:text-base uppercase tracking-[0.4em] text-white/95 mb-4 font-medium drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)]">
-              Международное тур агентство
+              Международное турагентство
             </p>
             <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-4 drop-shadow-[0_4px_16px_rgba(0,0,0,0.7)]">
-              Найдём тур за 15 минут
-              <br />
-              <span className="text-[#D9921D] drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)]">от горячих предложений до VIP-отдыха</span>
+              Ваше идеальное путешествие начинается здесь
             </h1>
+            <p className="text-2xl md:text-4xl lg:text-5xl font-bold mb-6 drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)]">
+              <span className="text-[#D9921D] drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)]">Надёжные туры и комфортный отдых по всему миру — с заботой о каждой детали.</span>
+            </p>
             <p className="text-base md:text-lg text-white/95 mb-6 drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)]">
-              Сотрудничаем с крупнейшими туроператорами и подбираем туры по России, Европе, Азии и Ближнему Востоку
+              Лучшие направления по России, Европе, Азии и Ближнему Востоку — от надёжных туроператоров.
             </p>
           </div>
         </div>
@@ -147,15 +148,13 @@ export default function Home() {
         <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
           <div className="space-y-6">
             <p className="text-sm uppercase tracking-[0.4em] text-[#475C8C]">
-              Международное тур агентство
+              Международное турагентство
             </p>
             <h1 className="text-3xl font-semibold text-[#121420] md:text-5xl">
               Найдём тур за 15 минут — от горячих предложений до VIP-отдыха
             </h1>
             <p className="text-base text-[#4a4e65]">
-              Сотрудничаем с крупнейшими туроператорами и подбираем туры по
-              России, Европе, Азии и Ближнему Востоку. Всё как у классического
-              агентства, но с премиальным сервисом Oktour.
+              Лучшие направления по России, Европе, Азии и Ближнему Востоку — от надёжных туроператоров.
             </p>
             <div className="flex flex-wrap gap-3">
               <Button asChild size="lg">

@@ -85,15 +85,17 @@ export function NavigationPreloader() {
       <div className="flex flex-col items-center justify-center px-4">
         {/* Logo */}
         <div className="mb-6 flex items-center justify-center">
-          <Image
-            src="/Preloader/preload.gif"
-            alt="Loading"
-            width={100}
-            height={100}
-            className="h-20 w-20 md:h-28 md:w-28"
-            unoptimized
-            priority
-          />
+          <div className="h-[180px] w-[180px] md:h-[168px] md:w-[168px]">
+            <Image
+              src="/Preloader/preload.gif"
+              alt="Loading"
+              width={180}
+              height={180}
+              className="h-full w-full object-contain"
+              unoptimized
+              priority
+            />
+          </div>
         </div>
 
         {/* Slogan */}

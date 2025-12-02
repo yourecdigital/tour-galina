@@ -25,6 +25,18 @@ export default function HotelsPage() {
         <div className="tv-image-slider tv-moduleid-9986122" />
       </section>
 
+      <section className="space-y-4 rounded-[36px] border border-[#475C8C]/20 bg-white p-6 shadow-[var(--shadow-card)]">
+        <p className="text-sm uppercase tracking-[0.4em] text-[#475C8C]/70">
+          Страны и отели
+        </p>
+        <h2 className="text-2xl font-semibold text-[#121420]">
+          Подбор по направлениям
+        </h2>
+        <div className="rounded-[32px] border border-dashed border-[#475C8C]/30 bg-white/80 p-4">
+          <div className="tv-country tv-moduleid-9986121" />
+        </div>
+      </section>
+
       <section className="grid gap-6 md:grid-cols-3">
         {benefits.map((benefit) => (
           <article
@@ -38,18 +50,6 @@ export default function HotelsPage() {
             <p className="mt-2 text-sm text-[#4a4e65]">{benefit.copy}</p>
           </article>
         ))}
-      </section>
-
-      <section className="space-y-4 rounded-[36px] border border-[#475C8C]/20 bg-white p-6 shadow-[var(--shadow-card)]">
-        <p className="text-sm uppercase tracking-[0.4em] text-[#475C8C]/70">
-          Страны и отели
-        </p>
-        <h2 className="text-2xl font-semibold text-[#121420]">
-          Подбор по направлениям
-        </h2>
-        <div className="rounded-[32px] border border-dashed border-[#475C8C]/30 bg-white/80 p-4">
-          <div className="tv-country tv-moduleid-9986121" />
-        </div>
       </section>
     </div>
   );
