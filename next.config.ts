@@ -1,8 +1,8 @@
 import type { NextConfig } from "next";
 
-// Для серверного деплоя через Docker нам НЕ нужен статический export,
-// иначе падает сборка из‑за API маршрутов (output: "export" запрещает их).
 const nextConfig: NextConfig = {
+  // Нужен standalone-вывод, чтобы Docker мог скопировать /app/.next/standalone
+  output: "standalone",
   trailingSlash: true,
   images: {
     unoptimized: true,
