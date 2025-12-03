@@ -151,7 +151,7 @@ export default function Home() {
               Международное турагентство
             </p>
             <h1 className="text-3xl font-semibold text-[#121420] md:text-5xl">
-              Найдём тур за 15 минут — от горячих предложений до VIP-отдыха
+              Найдём тур — от горячих предложений до VIP-отдыха
             </h1>
             <p className="text-base text-[#4a4e65]">
               Лучшие направления по России, Европе, Азии и Ближнему Востоку — от надёжных туроператоров.
@@ -389,7 +389,7 @@ export default function Home() {
               </div>
             </div>
           </div>
-          <LeadForm title="Оставьте заявку — мы свяжемся в течение 15 минут" />
+          <LeadForm title="Оставьте заявку — мы свяжемся с вами" />
         </div>
       </section>
     </div>

@@ -139,34 +139,6 @@ export default function KrasnayaPolyanaPage() {
         />
       </section>
 
-      <header className="space-y-4 rounded-[36px] border border-[#475C8C]/20 bg-white p-8 shadow-[var(--shadow-card)]">
-        <p className="text-sm uppercase tracking-[0.4em] text-[#475C8C]/70">
-          Красная Поляна
-        </p>
-        <h1 className="text-3xl font-semibold text-[#121420] md:text-4xl">
-          Горнолыжный курорт мирового уровня
-        </h1>
-        <p className="text-base text-[#4a4e65]">
-          Подбираем туры на Красную Поляну: отели 4-5*, ски-пассы, трансферы,
-          экскурсии. Зимний и летний сезоны с актуальными ценами и наличием.
-        </p>
-      </header>
-
-      <section className="grid gap-6 md:grid-cols-3">
-        {activities.map((activity) => (
-          <article
-            key={activity.title}
-            className="rounded-[30px] border border-[#475C8C]/15 bg-gradient-to-br from-white to-[#eef2ff] p-6 shadow-[var(--shadow-card)]"
-          >
-            <activity.icon className="size-10 text-[#475C8C]" />
-            <h2 className="mt-4 text-xl font-semibold text-[#121420]">
-              {activity.title}
-            </h2>
-            <p className="mt-2 text-sm text-[#4a4e65]">{activity.copy}</p>
-          </article>
-        ))}
-      </section>
-
       {/* Tours Section */}
       {tours.length > 0 && (
         <section className="space-y-6">
@@ -304,6 +276,34 @@ export default function KrasnayaPolyanaPage() {
           )}
       </section>
       )}
+
+      <header className="space-y-4 rounded-[36px] border border-[#475C8C]/20 bg-white p-8 shadow-[var(--shadow-card)]">
+        <p className="text-sm uppercase tracking-[0.4em] text-[#475C8C]/70">
+          Красная Поляна
+        </p>
+        <h1 className="text-3xl font-semibold text-[#121420] md:text-4xl">
+          Горнолыжный курорт мирового уровня
+        </h1>
+        <p className="text-base text-[#4a4e65]">
+          Подбираем туры на Красную Поляну: отели 4-5*, ски-пассы, трансферы,
+          экскурсии. Зимний и летний сезоны с актуальными ценами и наличием.
+        </p>
+      </header>
+
+      <section className="grid gap-6 md:grid-cols-3">
+        {activities.map((activity) => (
+          <article
+            key={activity.title}
+            className="rounded-[30px] border border-[#475C8C]/15 bg-gradient-to-br from-white to-[#eef2ff] p-6 shadow-[var(--shadow-card)]"
+          >
+            <activity.icon className="size-10 text-[#475C8C]" />
+            <h2 className="mt-4 text-xl font-semibold text-[#121420]">
+              {activity.title}
+            </h2>
+            <p className="mt-2 text-sm text-[#4a4e65]">{activity.copy}</p>
+          </article>
+        ))}
+      </section>
 
       {/* Add to Cart Modal */}
       {modalTour && (
