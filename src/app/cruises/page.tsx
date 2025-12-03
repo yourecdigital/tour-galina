@@ -60,6 +60,11 @@ export default function CruisesPage() {
         </div>
       </section>
 
+      {/* Виджет круизного оператора */}
+      <section className="rounded-[32px] border border-[#475C8C]/20 bg-white p-4 shadow-[var(--shadow-card)]">
+        <div id="awidget" />
+      </section>
+
       <header className="space-y-4 rounded-[36px] border border-[#475C8C]/20 bg-white p-8 shadow-[var(--shadow-card)]">
         <p className="text-sm uppercase tracking-[0.4em] text-[#475C8C]/70">
           Круизы
@@ -73,11 +78,6 @@ export default function CruisesPage() {
           наличием.
         </p>
       </header>
-
-      {/* Виджет круизного оператора */}
-      <section className="rounded-[32px] border border-[#475C8C]/20 bg-white p-4 shadow-[var(--shadow-card)]">
-        <div id="awidget" />
-      </section>
 
       {/* Завершающий блок с пояснением */}
       <section className="rounded-[32px] border border-[#475C8C]/15 bg-gradient-to-br from-white to-[#f7f8fc] p-8 shadow-[var(--shadow-card)]">
