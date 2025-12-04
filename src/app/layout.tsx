@@ -20,32 +20,83 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Oktour • Международное тур агентство",
+  title: "Oktour • Международное турагентство",
   description:
-    "Премиальный тревел-сервис Oktour: авторские маршруты по России, Европе, Азии и Ближнему Востоку.",
-  metadataBase: new URL("https://oktour.example.com"),
+    "Премиальный тревел-сервис Oktour: авторские маршруты по России, Европе, Азии и Ближнему Востоку. Надёжные туры и комфортный отдых по всему миру.",
+  metadataBase: new URL("https://oktour.travel"),
   icons: {
-    icon: "/favicon.ico",
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/logo/фирм.цвет.квадрат.ico", sizes: "32x32", type: "image/x-icon" },
+    ],
     shortcut: "/favicon.ico",
-    apple: "/favicon.ico",
+    apple: [
+      { url: "/logo/logo.png", sizes: "180x180", type: "image/png" },
+    ],
   },
   keywords: [
     "Oktour",
     "Ok tour",
-    "тур агентство Сочи",
+    "турагентство Сочи",
+    "турагентство Красная Поляна",
     "поиск туров",
     "горящие туры",
     "туристические предложения",
+    "туры по России",
+    "зарубежные туры",
+    "круизы",
+    "отели",
   ],
   openGraph: {
     title: "Oktour — авторские путешествия по всему миру",
     description:
-      "Интеллигентный сервис путешествий: Россия, зарубежные туры, лучшие отели, сильная команда тревел-дизайнеров.",
+      "Интеллигентный сервис путешествий: Россия, зарубежные туры, лучшие отели, сильная команда тревел-дизайнеров. Надёжные туры и комфортный отдых по всему миру.",
     type: "website",
+    url: "https://oktour.travel",
+    siteName: "Oktour",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Oktour — Международное турагентство",
+      },
+      {
+        url: "/logo/logo.png",
+        width: 1200,
+        height: 630,
+        alt: "Oktour — Международное турагентство",
+      },
+    ],
+    locale: "ru_RU",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Oktour — авторские путешествия по всему миру",
+    description:
+      "Интеллигентный сервис путешествий: Россия, зарубежные туры, лучшие отели, сильная команда тревел-дизайнеров.",
+    images: ["/og-image.png"],
   },
   alternates: {
-    canonical: "/",
+    canonical: "https://oktour.travel",
   },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  verification: {
+    // Добавьте здесь коды верификации для поисковых систем, если нужно
+    // google: "your-google-verification-code",
+    // yandex: "your-yandex-verification-code",
+  },
+  category: "travel",
 };
 
 export default function RootLayout({
@@ -83,9 +134,9 @@ export default function RootLayout({
             "@type": "TravelAgency",
             name: "Oktour",
             alternateName: ["Ok tour", "Oktour Travel"],
-            url: "https://oktour.example.com",
-            logo: "https://oktour.example.com/logo/logo.png",
-            image: "https://oktour.example.com/logo/logo.png",
+            url: "https://oktour.travel",
+            logo: "https://oktour.travel/logo/logo.png",
+            image: "https://oktour.travel/logo/logo.png",
             description:
               "Oktour — международное туристическое агентство из Сочи. Поиск туров, горящие предложения, VIP-отдых.",
             address: {
@@ -116,10 +167,10 @@ export default function RootLayout({
             "@context": "https://schema.org",
             "@type": "WebSite",
             name: "Oktour",
-            url: "https://oktour.example.com",
+            url: "https://oktour.travel",
             potentialAction: {
               "@type": "SearchAction",
-              target: "https://oktour.example.com/search?q={search_term_string}",
+              target: "https://oktour.travel/search?q={search_term_string}",
               "query-input": "required name=search_term_string",
             },
           })}

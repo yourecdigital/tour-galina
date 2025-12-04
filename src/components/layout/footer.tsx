@@ -32,6 +32,9 @@ export function SiteFooter() {
               © {new Date().getFullYear()} Oktour • Офис в Сочи. Все права
               защищены.
             </p>
+            <p className="text-xs text-white/50">
+              ИП Дубровская Г.А. • ИНН 246203595517
+            </p>
             <div className="flex flex-wrap gap-4 text-xs text-white/60">
               <Link
                 href="/privacy-policy"
