@@ -170,7 +170,7 @@ export default function AdminPage() {
         url = `/api/categories/${deleteConfirm.id}`;
       } else if (deleteConfirm.type === "subcategory") {
         url = `/api/subcategories/${deleteConfirm.id}`;
-      } else {
+      } else if (deleteConfirm.type === "team") {
         url = `/api/team-members/${deleteConfirm.id}`;
       }
       await fetch(url, { method: "DELETE" });
@@ -182,7 +182,7 @@ export default function AdminPage() {
         loadSubcategories();
       } else if (deleteConfirm.type === "subcategory") {
         loadSubcategories();
-      } else {
+      } else if (deleteConfirm.type === "team") {
         loadTeamMembers();
       }
       setDeleteConfirm(null);
@@ -1352,7 +1352,7 @@ function DeleteConfirmModal({
   onCancel,
   loading,
 }: {
-  type: "tour" | "category";
+  type: "tour" | "category" | "subcategory" | "team";
   name: string;
   onConfirm: () => void;
   onCancel: () => void;

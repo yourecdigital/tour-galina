@@ -96,25 +96,85 @@ ls -la
 
 ## Шаг 5: Создание необходимых папок и установка прав
 
+**ВАЖНО:** Этот шаг критически важен для работы приложения! Без правильных папок и прав доступа база данных и загрузка файлов не будут работать.
+
 ```bash
-# Создайте все необходимые папки
+# Убедитесь, что вы находитесь в директории проекта
+cd /var/www/oktour
+
+# 1. Создайте папку для базы данных SQLite
 mkdir -p data
+echo "Папка data создана для базы данных"
+
+# 2. Создайте папки для загрузки изображений и видео туров
 mkdir -p public/uploads/photo
 mkdir -p public/uploads/video
-mkdir -p public/kp
-mkdir -p public/cruises
-mkdir -p public/home
+echo "Папки для загрузок созданы"
 
-# Установите правильные права доступа (КРИТИЧЕСКИ ВАЖНО!)
+# 3. Создайте папки для видео hero-секций
+mkdir -p public/kp          # Видео для страницы Красной Поляны
+mkdir -p public/cruises     # Видео для страницы круизов
+mkdir -p public/home        # Видео для главной страницы
+echo "Папки для hero-видео созданы"
+
+# 4. Создайте папку для фотографий команды (если нужно)
+mkdir -p public/team
+echo "Папка для фотографий команды создана"
+
+# 5. Установите правильные права доступа (КРИТИЧЕСКИ ВАЖНО!)
+# Права 777 нужны для того, чтобы Docker контейнер мог записывать файлы
 chmod -R 777 data
 chmod -R 777 public/uploads
 chmod -R 777 public/kp
 chmod -R 777 public/cruises
 chmod -R 777 public/home
+chmod -R 777 public/team
+echo "Права доступа установлены"
 
-# Проверьте права
+# 6. Установите правильного владельца (опционально, но рекомендуется)
+# Замените $USER на ваше имя пользователя, если нужно
+chown -R $USER:$USER data public/uploads public/kp public/cruises public/home public/team 2>/dev/null || true
+echo "Владелец установлен"
+
+# 7. Проверьте, что все папки созданы и имеют правильные права
+echo "=== Проверка созданных папок ==="
 ls -ld data
 ls -ld public/uploads
+ls -ld public/kp
+ls -ld public/cruises
+ls -ld public/home
+ls -ld public/team
+
+echo ""
+echo "=== Проверка структуры папок ==="
+tree -L 3 data public/uploads public/kp public/cruises public/home public/team 2>/dev/null || find data public/uploads public/kp public/cruises public/home public/team -type d | head -20
+
+echo ""
+echo "=== Проверка прав доступа ==="
+stat -c "%a %n" data public/uploads public/kp public/cruises public/home public/team
+
+echo ""
+echo "✅ Все папки созданы и права установлены!"
+```
+
+**Что делают эти папки:**
+
+- **`data/`** — хранит базу данных SQLite (`tours.db`). Должна иметь права 777 для записи.
+- **`public/uploads/photo/`** — фотографии туров, загружаемые через админ-панель.
+- **`public/uploads/video/`** — видео туров, загружаемые через админ-панель.
+- **`public/kp/`** — видео для hero-секции страницы Красной Поляны (файлы: `m.mp4`, `p.mp4`, `d.mp4`).
+- **`public/cruises/`** — видео для hero-секции страницы круизов.
+- **`public/home/`** — видео для hero-секции главной страницы.
+- **`public/team/`** — фотографии членов команды.
+
+**Если что-то пошло не так:**
+
+```bash
+# Удалите все папки и создайте заново
+cd /var/www/oktour
+rm -rf data public/uploads public/kp public/cruises public/home public/team
+
+# Затем выполните команды создания папок снова (см. выше)
 ```
 
 ---
