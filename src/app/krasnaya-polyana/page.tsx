@@ -33,6 +33,7 @@ interface Tour {
   photos: string[] | null;
   videos: string[] | null;
   category_id: number | null;
+  subcategory_id: number | null;
   duration: string | null;
   location: string | null;
   slug: string | null;
@@ -44,10 +45,19 @@ interface Category {
   name: string;
 }
 
+interface Subcategory {
+  id: number;
+  name: string;
+  category_id: number;
+  category_name?: string;
+}
+
 export default function KrasnayaPolyanaPage() {
   const [tours, setTours] = useState<Tour[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [subcategories, setSubcategories] = useState<Subcategory[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
+  const [selectedSubcategory, setSelectedSubcategory] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [modalTour, setModalTour] = useState<{ title: string } | null>(null);
 
@@ -62,19 +72,54 @@ export default function KrasnayaPolyanaPage() {
         fetch("/api/categories"),
       ]);
 
+      if (!toursRes.ok) {
+        throw new Error(`Ошибка загрузки туров: ${toursRes.status}`);
+      }
+      if (!categoriesRes.ok) {
+        throw new Error(`Ошибка загрузки категорий: ${categoriesRes.status}`);
+      }
+
       const toursData = await toursRes.json();
       const categoriesData = await categoriesRes.json();
 
-      setTours(toursData);
-      setCategories(categoriesData);
+      setTours(Array.isArray(toursData) ? toursData : []);
+      setCategories(Array.isArray(categoriesData) ? categoriesData : []);
     } catch (error) {
       console.error("Ошибка загрузки данных:", error);
+      setTours([]);
+      setCategories([]);
     } finally {
       setLoading(false);
     }
   };
 
-  const filteredTours = selectedCategory
+  const loadSubcategories = async (categoryId: number) => {
+    try {
+      const res = await fetch(`/api/subcategories?categoryId=${categoryId}`);
+      if (!res.ok) {
+        throw new Error(`Ошибка загрузки подкатегорий: ${res.status}`);
+      }
+      const data = await res.json();
+      setSubcategories(Array.isArray(data) ? data : []);
+    } catch (error) {
+      console.error("Ошибка загрузки подкатегорий:", error);
+      setSubcategories([]);
+    }
+  };
+
+  const handleCategoryClick = (categoryId: number | null) => {
+    setSelectedCategory(categoryId);
+    setSelectedSubcategory(null);
+    if (categoryId) {
+      loadSubcategories(categoryId);
+    } else {
+      setSubcategories([]);
+    }
+  };
+
+  const filteredTours = selectedSubcategory
+    ? tours.filter((tour) => tour.subcategory_id === selectedSubcategory)
+    : selectedCategory
     ? tours.filter((tour) => tour.category_id === selectedCategory)
     : tours;
 
@@ -140,8 +185,7 @@ export default function KrasnayaPolyanaPage() {
       </section>
 
       {/* Tours Section */}
-      {tours.length > 0 && (
-        <section className="space-y-6">
+      <section className="space-y-6">
         <div>
           <p className="text-sm uppercase tracking-[0.4em] text-[#475C8C]/70">
               Наши туры
@@ -154,32 +198,63 @@ export default function KrasnayaPolyanaPage() {
           </p>
         </div>
 
-          {/* Category Filter */}
-          {categories.length > 0 && (
-            <div className="flex flex-wrap gap-2">
-              <button
-                onClick={() => setSelectedCategory(null)}
-                className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
-                  selectedCategory === null
-                    ? "bg-[#475C8C] text-white"
-                    : "bg-white text-[#475C8C] border border-[#475C8C]/20 hover:bg-[#475C8C]/10"
-                }`}
-              >
-                Все туры
-              </button>
-              {categories.map((category) => (
+        {/* Category Filter */}
+        {categories.length > 0 && (
+            <div className="space-y-4">
+              <div className="flex flex-wrap gap-2">
                 <button
-                  key={category.id}
-                  onClick={() => setSelectedCategory(category.id)}
+                  onClick={() => handleCategoryClick(null)}
                   className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
-                    selectedCategory === category.id
+                    selectedCategory === null
                       ? "bg-[#475C8C] text-white"
                       : "bg-white text-[#475C8C] border border-[#475C8C]/20 hover:bg-[#475C8C]/10"
                   }`}
                 >
-                  {category.name}
+                  Все туры
                 </button>
-              ))}
+                {categories.map((category) => (
+                  <button
+                    key={category.id}
+                    onClick={() => handleCategoryClick(category.id)}
+                    className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
+                      selectedCategory === category.id
+                        ? "bg-[#475C8C] text-white"
+                        : "bg-white text-[#475C8C] border border-[#475C8C]/20 hover:bg-[#475C8C]/10"
+                    }`}
+                  >
+                    {category.name}
+                  </button>
+                ))}
+              </div>
+
+              {/* Subcategory Filter - показываем только если выбрана категория */}
+              {selectedCategory && subcategories.length > 0 && (
+                <div className="flex flex-wrap gap-2 pl-2 border-l-2 border-[#475C8C]/20">
+                  <button
+                    onClick={() => setSelectedSubcategory(null)}
+                    className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
+                      selectedSubcategory === null
+                        ? "bg-[#D9921D] text-white"
+                        : "bg-white text-[#D9921D] border border-[#D9921D]/20 hover:bg-[#D9921D]/10"
+                    }`}
+                  >
+                    Все подкатегории
+                  </button>
+                  {subcategories.map((subcategory) => (
+                    <button
+                      key={subcategory.id}
+                      onClick={() => setSelectedSubcategory(subcategory.id)}
+                      className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
+                        selectedSubcategory === subcategory.id
+                          ? "bg-[#D9921D] text-white"
+                          : "bg-white text-[#D9921D] border border-[#D9921D]/20 hover:bg-[#D9921D]/10"
+                      }`}
+                    >
+                      {subcategory.name}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           )}
 
@@ -272,10 +347,9 @@ export default function KrasnayaPolyanaPage() {
           ) : (
             <div className="text-center py-12 text-[#4a4e65]">
               Туры не найдены. Попробуйте выбрать другую категорию.
-        </div>
+            </div>
           )}
       </section>
-      )}
 
       <header className="space-y-4 rounded-[36px] border border-[#475C8C]/20 bg-white p-8 shadow-[var(--shadow-card)]">
         <p className="text-sm uppercase tracking-[0.4em] text-[#475C8C]/70">

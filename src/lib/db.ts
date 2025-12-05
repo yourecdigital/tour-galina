@@ -80,6 +80,15 @@ function initializeSchema(db: DatabaseType) {
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP
       );
 
+      CREATE TABLE IF NOT EXISTS subcategories (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        category_id INTEGER NOT NULL,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE,
+        UNIQUE(name, category_id)
+      );
+
       CREATE TABLE IF NOT EXISTS tours (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         title TEXT NOT NULL,
@@ -98,6 +107,7 @@ function initializeSchema(db: DatabaseType) {
       );
 
       CREATE INDEX IF NOT EXISTS idx_tours_category ON tours(category_id);
+      CREATE INDEX IF NOT EXISTS idx_subcategories_category ON subcategories(category_id);
       CREATE UNIQUE INDEX IF NOT EXISTS idx_tours_slug ON tours(slug);
 
       CREATE TABLE IF NOT EXISTS bookings (
@@ -111,6 +121,19 @@ function initializeSchema(db: DatabaseType) {
       );
 
       CREATE INDEX IF NOT EXISTS idx_bookings_tour ON bookings(tour_id);
+
+      CREATE TABLE IF NOT EXISTS team_members (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        role TEXT NOT NULL,
+        quote TEXT,
+        photo TEXT,
+        display_order INTEGER DEFAULT 0,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      );
+
+      CREATE INDEX IF NOT EXISTS idx_team_members_order ON team_members(display_order);
     `);
 
     // Миграция: добавляем поля photos и videos если их нет
@@ -137,6 +160,53 @@ function initializeSchema(db: DatabaseType) {
       if (!e.message.includes("duplicate column name") && !e.message.includes("duplicate column")) {
         console.warn("Ошибка при добавлении поля slug:", e.message);
       }
+    }
+
+    // Миграция: создаем таблицу subcategories если её нет
+    try {
+      db.prepare(`
+        CREATE TABLE IF NOT EXISTS subcategories (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          name TEXT NOT NULL,
+          category_id INTEGER NOT NULL,
+          created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+          FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE,
+          UNIQUE(name, category_id)
+        )
+      `).run();
+      db.prepare("CREATE INDEX IF NOT EXISTS idx_subcategories_category ON subcategories(category_id)").run();
+    } catch (e: any) {
+      if (!e.message.includes("already exists") && !e.message.includes("duplicate")) {
+        console.warn("Ошибка при создании таблицы subcategories:", e.message);
+      }
+    }
+
+    // Миграция: добавляем поле subcategory_id в tours если его нет
+    try {
+      // Проверяем, существует ли колонка
+      const tableInfo = db.prepare("PRAGMA table_info(tours)").all() as Array<{ name: string }>;
+      const hasSubcategoryId = tableInfo.some(col => col.name === "subcategory_id");
+      
+      if (!hasSubcategoryId) {
+        console.log("Добавляем поле subcategory_id в таблицу tours...");
+        db.prepare("ALTER TABLE tours ADD COLUMN subcategory_id INTEGER").run();
+        console.log("Поле subcategory_id успешно добавлено");
+        
+        // Создаем индекс после добавления колонки
+        try {
+          db.prepare("CREATE INDEX IF NOT EXISTS idx_tours_subcategory ON tours(subcategory_id)").run();
+          console.log("Индекс idx_tours_subcategory создан");
+        } catch (e: any) {
+          if (!e.message.includes("already exists") && !e.message.includes("duplicate")) {
+            console.warn("Ошибка при создании индекса subcategory_id:", e.message);
+          }
+        }
+      } else {
+        console.log("Поле subcategory_id уже существует в таблице tours");
+      }
+    } catch (e: any) {
+      console.error("Критическая ошибка при добавлении поля subcategory_id:", e.message);
+      // Не прерываем выполнение, так как это может быть нормально если поле уже существует
     }
 
     // Создаем индекс для slug (отдельно, чтобы не падало если индекс уже существует)
@@ -184,6 +254,31 @@ function initializeSchema(db: DatabaseType) {
       }
     } catch (e: any) {
       console.warn("Ошибка при инициализации категорий:", e.message);
+    }
+
+    // Вставляем начальных членов команды если их нет
+    try {
+      const teamCount = db.prepare("SELECT COUNT(*) as count FROM team_members").get() as { count: number };
+      if (teamCount.count === 0) {
+        const insertMember = db.prepare("INSERT INTO team_members (name, role, quote, photo, display_order) VALUES (?, ?, ?, ?, ?)");
+        const teamMembers = [
+          { name: "Галина", role: "Идейный вдохновитель нашей команды", quote: "Вдохновляет нас искать тонкий баланс между комфортом и приключением.", photo: "/team/1.jpg", order: 0 },
+          { name: "Сергей", role: "Горы — символ свободы и внутреннего роста, где чувствуешь себя живым", quote: "Ведёт авторские маршруты и следит, чтобы каждая деталь соответствовала мечте клиента.", photo: "/team/2.jpg", order: 1 },
+          { name: "Евгений", role: "Для него горы — не просто отдых, а источник вдохновения и силы", quote: "Отвечает за экспедиции и трекинг, подключая лучшие локальные команды.", photo: "/team/3.jpg", order: 2 },
+          { name: "Анна", role: "Читала книги о горных путешествиях, а теперь — это её жизнь", quote: "Создаёт камерные программы с сильным сторителлингом и вниманием к эмоциям.", photo: "/team/4.jpg", order: 3 },
+          { name: "Марина", role: "Верит, что каждое путешествие начинается с искреннего внимания к мечтам", quote: "Обеспечивает персональный сервис и заботится о комфорте клиентов на каждом этапе.", photo: "/team/5.jpg", order: 4 },
+        ];
+        teamMembers.forEach((member) => {
+          try {
+            insertMember.run(member.name, member.role, member.quote, member.photo, member.order);
+          } catch (e: any) {
+            console.warn("Ошибка при вставке члена команды:", e.message);
+          }
+        });
+        console.log("Начальные члены команды добавлены в базу данных");
+      }
+    } catch (e: any) {
+      console.warn("Ошибка при инициализации членов команды:", e.message);
     }
   } catch (e: any) {
     console.error("Критическая ошибка при создании таблиц:", e.message);

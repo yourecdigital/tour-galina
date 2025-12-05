@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { LogOut, Plus, Edit, Trash2, Tag, MapPin, Calendar, Wallet } from "lucide-react";
+import { LogOut, Plus, Edit, Trash2, Tag, MapPin, Calendar, Wallet, ChevronDown, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { FileUploader } from "@/components/ui/file-uploader";
 
@@ -15,6 +15,7 @@ interface Tour {
   photos: string[] | null;
   videos: string[] | null;
   category_id: number | null;
+  subcategory_id: number | null;
   duration: string | null;
   location: string | null;
   created_at: string;
@@ -36,18 +37,44 @@ interface Category {
   created_at: string;
 }
 
+interface Subcategory {
+  id: number;
+  name: string;
+  category_id: number;
+  category_name?: string;
+  created_at: string;
+}
+
+interface TeamMember {
+  id: number;
+  name: string;
+  role: string;
+  quote: string | null;
+  photo: string | null;
+  display_order: number;
+  created_at: string;
+  updated_at: string;
+}
+
 export default function AdminPage() {
   const router = useRouter();
   const [authenticated, setAuthenticated] = useState<boolean | null>(null);
   const [tours, setTours] = useState<Tour[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
-  const [activeTab, setActiveTab] = useState<"tours" | "categories" | "hero-video" | "hero-video-home" | "hero-video-cruises">("tours");
+  const [subcategories, setSubcategories] = useState<Subcategory[]>([]);
+  const [expandedCategories, setExpandedCategories] = useState<Set<number>>(new Set());
+  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
+  const [activeTab, setActiveTab] = useState<"tours" | "categories" | "hero-video" | "hero-video-home" | "hero-video-cruises" | "team">("tours");
   const [showTourForm, setShowTourForm] = useState(false);
   const [showCategoryForm, setShowCategoryForm] = useState(false);
+  const [showSubcategoryForm, setShowSubcategoryForm] = useState(false);
+  const [showTeamMemberForm, setShowTeamMemberForm] = useState(false);
   const [editingTour, setEditingTour] = useState<Tour | null>(null);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
+  const [editingSubcategory, setEditingSubcategory] = useState<Subcategory | null>(null);
+  const [editingTeamMember, setEditingTeamMember] = useState<TeamMember | null>(null);
   const [loading, setLoading] = useState(false);
-  const [deleteConfirm, setDeleteConfirm] = useState<{ type: "tour" | "category"; id: number; name: string } | null>(null);
+  const [deleteConfirm, setDeleteConfirm] = useState<{ type: "tour" | "category" | "subcategory" | "team"; id: number; name: string } | null>(null);
 
   // Проверка аутентификации
   useEffect(() => {
@@ -59,6 +86,8 @@ export default function AdminPage() {
     if (authenticated) {
       loadTours();
       loadCategories();
+      loadSubcategories();
+      loadTeamMembers();
     }
   }, [authenticated]);
 
@@ -96,6 +125,30 @@ export default function AdminPage() {
     }
   };
 
+  const loadSubcategories = async () => {
+    try {
+      const res = await fetch("/api/subcategories");
+      const data = await res.json();
+      setSubcategories(data);
+    } catch (error) {
+      console.error("Ошибка загрузки подкатегорий:", error);
+    }
+  };
+
+  const loadTeamMembers = async () => {
+    try {
+      const res = await fetch("/api/team-members");
+      if (!res.ok) {
+        throw new Error(`Ошибка загрузки: ${res.status}`);
+      }
+      const data = await res.json();
+      setTeamMembers(Array.isArray(data) ? data : []);
+    } catch (error) {
+      console.error("Ошибка загрузки членов команды:", error);
+      setTeamMembers([]);
+    }
+  };
+
   const handleLogout = async () => {
     await fetch("/api/auth/logout", { method: "POST" });
     router.push("/admin/login");
@@ -110,15 +163,27 @@ export default function AdminPage() {
 
     try {
       setLoading(true);
-      const url = deleteConfirm.type === "tour" 
-        ? `/api/tours/${deleteConfirm.id}` 
-        : `/api/categories/${deleteConfirm.id}`;
+      let url = "";
+      if (deleteConfirm.type === "tour") {
+        url = `/api/tours/${deleteConfirm.id}`;
+      } else if (deleteConfirm.type === "category") {
+        url = `/api/categories/${deleteConfirm.id}`;
+      } else if (deleteConfirm.type === "subcategory") {
+        url = `/api/subcategories/${deleteConfirm.id}`;
+      } else {
+        url = `/api/team-members/${deleteConfirm.id}`;
+      }
       await fetch(url, { method: "DELETE" });
       
       if (deleteConfirm.type === "tour") {
         loadTours();
-      } else {
+      } else if (deleteConfirm.type === "category") {
         loadCategories();
+        loadSubcategories();
+      } else if (deleteConfirm.type === "subcategory") {
+        loadSubcategories();
+      } else {
+        loadTeamMembers();
       }
       setDeleteConfirm(null);
     } catch (error) {
@@ -130,6 +195,24 @@ export default function AdminPage() {
 
   const handleDeleteCategory = (category: Category) => {
     setDeleteConfirm({ type: "category", id: category.id, name: category.name });
+  };
+
+  const handleDeleteSubcategory = (subcategory: Subcategory) => {
+    setDeleteConfirm({ type: "subcategory", id: subcategory.id, name: subcategory.name });
+  };
+
+  const handleDeleteTeamMember = (member: TeamMember) => {
+    setDeleteConfirm({ type: "team", id: member.id, name: member.name });
+  };
+
+  const toggleCategoryExpansion = (categoryId: number) => {
+    const newExpanded = new Set(expandedCategories);
+    if (newExpanded.has(categoryId)) {
+      newExpanded.delete(categoryId);
+    } else {
+      newExpanded.add(categoryId);
+    }
+    setExpandedCategories(newExpanded);
   };
 
   if (authenticated === null) {
@@ -217,6 +300,16 @@ export default function AdminPage() {
             }`}
           >
             Шапка Круизы
+          </button>
+          <button
+            onClick={() => setActiveTab("team")}
+            className={`flex-1 rounded-[16px] px-4 py-3 text-sm font-medium transition-colors ${
+              activeTab === "team"
+                ? "bg-[#475C8C] text-white"
+                : "text-[#475C8C] hover:bg-[#475C8C]/10"
+            }`}
+          >
+            Команда ({teamMembers.length})
           </button>
         </div>
 
@@ -340,36 +433,102 @@ export default function AdminPage() {
               </button>
             </div>
 
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {categories.map((category) => (
-                <div
-                  key={category.id}
-                  className="flex items-center justify-between rounded-[20px] border border-[#475C8C]/15 bg-gradient-to-br from-white to-[#eff2ff] p-4 shadow-[var(--shadow-card)]"
-                >
-                  <div className="flex items-center gap-3">
-                    <Tag className="text-[#475C8C]" size={20} />
-                    <span className="font-medium text-[#121420]">{category.name}</span>
+            <div className="space-y-4">
+              {categories.map((category) => {
+                const categorySubcategories = subcategories.filter(s => s.category_id === category.id);
+                const isExpanded = expandedCategories.has(category.id);
+                
+                return (
+                  <div
+                    key={category.id}
+                    className="rounded-[20px] border border-[#475C8C]/15 bg-gradient-to-br from-white to-[#eff2ff] shadow-[var(--shadow-card)] overflow-hidden"
+                  >
+                    <div className="flex items-center justify-between p-4">
+                      <div className="flex items-center gap-3 flex-1">
+                        <button
+                          onClick={() => toggleCategoryExpansion(category.id)}
+                          className="text-[#475C8C] hover:text-[#475C8C]/80"
+                        >
+                          {isExpanded ? <ChevronDown size={20} /> : <ChevronRight size={20} />}
+                        </button>
+                        <Tag className="text-[#475C8C]" size={20} />
+                        <span className="font-medium text-[#121420]">{category.name}</span>
+                        <span className="text-sm text-[#4a4e65]">
+                          ({categorySubcategories.length} подкатегорий)
+                        </span>
+                      </div>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => {
+                            setEditingSubcategory(null);
+                            setEditingCategory(category);
+                            setShowSubcategoryForm(true);
+                          }}
+                          className="rounded-full bg-[#D9921D]/10 p-2 text-[#D9921D] hover:bg-[#D9921D]/20"
+                          title="Добавить подкатегорию"
+                        >
+                          <Plus size={16} />
+                        </button>
+                        <button
+                          onClick={() => {
+                            setEditingCategory(category);
+                            setShowCategoryForm(true);
+                          }}
+                          className="rounded-full bg-[#475C8C]/10 p-2 text-[#475C8C] hover:bg-[#475C8C]/20"
+                        >
+                          <Edit size={16} />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteCategory(category)}
+                          disabled={loading}
+                          className="rounded-full bg-red-100 p-2 text-red-600 hover:bg-red-200"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                    </div>
+                    
+                    {/* Подкатегории */}
+                    {isExpanded && (
+                      <div className="border-t border-[#475C8C]/10 bg-white/50 px-4 py-3 space-y-2">
+                        {categorySubcategories.length > 0 ? (
+                          categorySubcategories.map((subcategory) => (
+                            <div
+                              key={subcategory.id}
+                              className="flex items-center justify-between rounded-[12px] border border-[#D9921D]/20 bg-gradient-to-r from-[#D9921D]/5 to-transparent p-3"
+                            >
+                              <div className="flex items-center gap-2">
+                                <div className="h-2 w-2 rounded-full bg-[#D9921D]" />
+                                <span className="text-sm font-medium text-[#121420]">{subcategory.name}</span>
+                              </div>
+                              <div className="flex gap-2">
+                                <button
+                                  onClick={() => {
+                                    setEditingSubcategory(subcategory);
+                                    setShowSubcategoryForm(true);
+                                  }}
+                                  className="rounded-full bg-[#D9921D]/10 p-1.5 text-[#D9921D] hover:bg-[#D9921D]/20"
+                                >
+                                  <Edit size={14} />
+                                </button>
+                                <button
+                                  onClick={() => handleDeleteSubcategory(subcategory)}
+                                  disabled={loading}
+                                  className="rounded-full bg-red-100 p-1.5 text-red-600 hover:bg-red-200"
+                                >
+                                  <Trash2 size={14} />
+                                </button>
+                              </div>
+                            </div>
+                          ))
+                        ) : (
+                          <p className="text-sm text-[#4a4e65] italic">Нет подкатегорий</p>
+                        )}
+                      </div>
+                    )}
                   </div>
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => {
-                        setEditingCategory(category);
-                        setShowCategoryForm(true);
-                      }}
-                      className="rounded-full bg-[#475C8C]/10 p-2 text-[#475C8C] hover:bg-[#475C8C]/20"
-                    >
-                      <Edit size={16} />
-                    </button>
-                    <button
-                      onClick={() => handleDeleteCategory(category)}
-                      disabled={loading}
-                      className="rounded-full bg-red-100 p-2 text-red-600 hover:bg-red-200"
-                    >
-                      <Trash2 size={16} />
-                    </button>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         )}
@@ -407,6 +566,26 @@ export default function AdminPage() {
           />
         )}
 
+        {/* Subcategory Form Modal */}
+        {showSubcategoryForm && (
+          <SubcategoryFormModal
+            subcategory={editingSubcategory}
+            category={editingCategory}
+            categories={categories}
+            onClose={() => {
+              setShowSubcategoryForm(false);
+              setEditingSubcategory(null);
+              setEditingCategory(null);
+            }}
+            onSuccess={() => {
+              loadSubcategories();
+              setShowSubcategoryForm(false);
+              setEditingSubcategory(null);
+              setEditingCategory(null);
+            }}
+          />
+        )}
+
         {/* Hero Video Tab */}
         {activeTab === "hero-video" && (
           <HeroVideoManager apiEndpoint="/api/hero-video" />
@@ -420,6 +599,93 @@ export default function AdminPage() {
         {/* Hero Video Cruises Tab */}
         {activeTab === "hero-video-cruises" && (
           <HeroVideoManager apiEndpoint="/api/hero-video-cruises" title="Управление шапкой страницы круизов" />
+        )}
+
+        {/* Team Tab */}
+        {activeTab === "team" && (
+          <div className="space-y-6">
+            <div className="flex items-center justify-between rounded-[28px] border border-[#475C8C]/20 bg-white p-6 shadow-[var(--shadow-card)]">
+              <h2 className="text-2xl font-semibold text-[#121420]">Члены команды</h2>
+              <button
+                onClick={() => {
+                  setEditingTeamMember(null);
+                  setShowTeamMemberForm(true);
+                }}
+                className="flex items-center gap-2 rounded-full bg-[#475C8C] px-4 py-2 text-sm font-medium text-white hover:bg-[#475C8C]/90"
+              >
+                <Plus size={16} />
+                Добавить члена команды
+              </button>
+            </div>
+
+            {teamMembers.length > 0 ? (
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                {teamMembers.map((member) => (
+                  <div
+                    key={member.id}
+                    className="rounded-[20px] border border-[#475C8C]/15 bg-gradient-to-br from-white to-[#eff2ff] p-4 shadow-[var(--shadow-card)]"
+                  >
+                    <div className="mb-4 aspect-square w-full overflow-hidden rounded-[16px] bg-[#475C8C]/5">
+                      {member.photo ? (
+                        <img
+                          src={member.photo}
+                          alt={member.name}
+                          className="h-full w-full object-cover"
+                        />
+                      ) : (
+                        <div className="flex h-full items-center justify-center text-[#475C8C]/30">
+                          <span className="text-4xl">👤</span>
+                        </div>
+                      )}
+                    </div>
+                    <h3 className="text-lg font-semibold text-[#121420]">{member.name}</h3>
+                    <p className="mt-1 text-sm text-[#4a4e65] line-clamp-2">{member.role}</p>
+                    {member.quote && (
+                      <p className="mt-2 text-xs text-[#4a4e65] line-clamp-2">{member.quote}</p>
+                    )}
+                    <div className="mt-4 flex gap-2">
+                      <button
+                        onClick={() => {
+                          setEditingTeamMember(member);
+                          setShowTeamMemberForm(true);
+                        }}
+                        className="flex-1 rounded-full bg-[#475C8C]/10 px-4 py-2 text-sm font-medium text-[#475C8C] hover:bg-[#475C8C]/20"
+                      >
+                        <Edit size={16} className="mx-auto" />
+                      </button>
+                      <button
+                        onClick={() => handleDeleteTeamMember(member)}
+                        disabled={loading}
+                        className="flex-1 rounded-full bg-red-100 px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-200"
+                      >
+                        <Trash2 size={16} className="mx-auto" />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="rounded-[20px] border border-[#475C8C]/15 bg-white p-8 text-center">
+                <p className="text-[#4a4e65]">Члены команды не найдены. Добавьте первого члена команды.</p>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Team Member Form Modal */}
+        {showTeamMemberForm && (
+          <TeamMemberFormModal
+            member={editingTeamMember}
+            onClose={() => {
+              setShowTeamMemberForm(false);
+              setEditingTeamMember(null);
+            }}
+            onSuccess={() => {
+              loadTeamMembers();
+              setShowTeamMemberForm(false);
+              setEditingTeamMember(null);
+            }}
+          />
         )}
 
         {/* Delete Confirmation Modal */}
@@ -449,12 +715,14 @@ function TourFormModal({
   onClose: () => void;
   onSuccess: () => void;
 }) {
+  const [subcategories, setSubcategories] = useState<Subcategory[]>([]);
   const [formData, setFormData] = useState({
     title: tour?.title || "",
     description: tour?.description || "",
     price: tour?.price?.toString() || "",
     image_url: tour?.image_url || "",
     category_id: tour?.category_id?.toString() || "",
+    subcategory_id: tour?.subcategory_id?.toString() || "",
     duration: tour?.duration || "",
     location: tour?.location || "",
     photos: tour?.photos || [],
@@ -462,6 +730,25 @@ function TourFormModal({
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  // Загружаем подкатегории при изменении категории
+  useEffect(() => {
+    if (formData.category_id) {
+      fetch(`/api/subcategories?categoryId=${formData.category_id}`)
+        .then(res => res.json())
+        .then(data => setSubcategories(data))
+        .catch(() => setSubcategories([]));
+    } else {
+      setSubcategories([]);
+    }
+  }, [formData.category_id]);
+
+  // Сбрасываем подкатегорию при изменении категории
+  useEffect(() => {
+    if (!formData.category_id) {
+      setFormData(prev => ({ ...prev, subcategory_id: "" }));
+    }
+  }, [formData.category_id]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -476,7 +763,8 @@ function TourFormModal({
         image_url: formData.image_url || null,
         photos: formData.photos.length > 0 ? formData.photos : null,
         videos: formData.videos.length > 0 ? formData.videos : null,
-        category_id: formData.category_id ? parseInt(formData.category_id) : null,
+        category_id: formData.category_id && formData.category_id !== "" ? parseInt(formData.category_id) : null,
+        subcategory_id: formData.subcategory_id && formData.subcategory_id !== "" ? parseInt(formData.subcategory_id) : null,
         duration: formData.duration || null,
         location: formData.location || null,
       };
@@ -589,7 +877,7 @@ function TourFormModal({
                 <label className="mb-2 block text-sm font-medium text-[#121420]">Категория</label>
                 <select
                   value={formData.category_id}
-                  onChange={(e) => setFormData({ ...formData, category_id: e.target.value })}
+                  onChange={(e) => setFormData({ ...formData, category_id: e.target.value, subcategory_id: "" })}
                   className="w-full rounded-[16px] border border-[#475C8C]/20 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#475C8C]"
                 >
                   <option value="">Без категории</option>
@@ -601,6 +889,24 @@ function TourFormModal({
                 </select>
               </div>
             </div>
+
+            {formData.category_id && subcategories.length > 0 && (
+              <div>
+                <label className="mb-2 block text-sm font-medium text-[#121420]">Подкатегория</label>
+                <select
+                  value={formData.subcategory_id}
+                  onChange={(e) => setFormData({ ...formData, subcategory_id: e.target.value })}
+                  className="w-full rounded-[16px] border border-[#D9921D]/20 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#D9921D]"
+                >
+                  <option value="">Без подкатегории</option>
+                  {subcategories.map((subcat) => (
+                    <option key={subcat.id} value={subcat.id}>
+                      {subcat.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
 
             <div className="grid gap-4 md:grid-cols-2">
               <div>
@@ -1077,13 +1383,13 @@ function DeleteConfirmModal({
           </h2>
           <p className="text-sm text-[#4a4e65]">
             Вы уверены, что хотите удалить{" "}
-            {type === "tour" ? "тур" : "категорию"}?
+            {type === "tour" ? "тур" : type === "category" ? "категорию" : type === "subcategory" ? "подкатегорию" : "члена команды"}?
           </p>
         </div>
 
         <div className="mb-6 rounded-[16px] border border-red-200 bg-red-50 p-4">
           <p className="text-sm font-medium text-red-900">
-            {type === "tour" ? "Тур:" : "Категория:"}
+            {type === "tour" ? "Тур:" : type === "category" ? "Категория:" : type === "subcategory" ? "Подкатегория:" : "Член команды:"}
           </p>
           <p className="mt-1 text-base font-semibold text-red-700">{name}</p>
         </div>
@@ -1112,6 +1418,337 @@ function DeleteConfirmModal({
               "Удалить"
             )}
           </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Subcategory Form Component
+function SubcategoryFormModal({
+  subcategory,
+  category,
+  categories,
+  onClose,
+  onSuccess,
+}: {
+  subcategory: Subcategory | null;
+  category: Category | null;
+  categories: Category[];
+  onClose: () => void;
+  onSuccess: () => void;
+}) {
+  const [name, setName] = useState(subcategory?.name || "");
+  const [categoryId, setCategoryId] = useState<number>(category?.id || subcategory?.category_id || categories[0]?.id || 0);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+
+    try {
+      const url = subcategory ? `/api/subcategories/${subcategory.id}` : "/api/subcategories";
+      const method = subcategory ? "PUT" : "POST";
+
+      const res = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, category_id: categoryId }),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || "Ошибка при сохранении");
+      }
+
+      onSuccess();
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+      <div className="w-full max-w-md rounded-[28px] border border-[#475C8C]/20 bg-white p-6 shadow-[var(--shadow-card)]">
+        <h2 className="mb-6 text-2xl font-semibold text-[#121420]">
+          {subcategory ? "Редактировать подкатегорию" : "Добавить подкатегорию"}
+        </h2>
+
+        {error && (
+          <div className="mb-4 rounded-[16px] bg-red-50 p-4 text-sm text-red-600">{error}</div>
+        )}
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="mb-2 block text-sm font-medium text-[#121420]">Категория *</label>
+            <select
+              value={categoryId}
+              onChange={(e) => setCategoryId(Number(e.target.value))}
+              required
+              disabled={!!category || !!subcategory}
+              className="w-full rounded-[16px] border border-[#475C8C]/20 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#475C8C] disabled:bg-gray-100 disabled:cursor-not-allowed"
+            >
+              {categories.map((cat) => (
+                <option key={cat.id} value={cat.id}>
+                  {cat.name}
+                </option>
+              ))}
+            </select>
+            {(category || subcategory) && (
+              <p className="mt-1 text-xs text-[#4a4e65]">
+                Категория: {category?.name || categories.find(c => c.id === (subcategory?.category_id))?.name}
+              </p>
+            )}
+          </div>
+
+          <div>
+            <label className="mb-2 block text-sm font-medium text-[#121420]">Название подкатегории *</label>
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+              className="w-full rounded-[16px] border border-[#475C8C]/20 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#475C8C]"
+            />
+          </div>
+
+          <div className="flex gap-4 pt-4">
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex-1 rounded-full border border-[#475C8C]/20 px-4 py-2 text-sm font-medium text-[#475C8C] hover:bg-[#475C8C]/10"
+            >
+              Отмена
+            </button>
+            <button
+              type="submit"
+              disabled={loading}
+              className="flex-1 rounded-full bg-[#D9921D] px-4 py-2 text-sm font-medium text-white hover:bg-[#D9921D]/90 disabled:opacity-50"
+            >
+              {loading ? "Сохранение..." : "Сохранить"}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+// Team Member Form Component
+function TeamMemberFormModal({
+  member,
+  onClose,
+  onSuccess,
+}: {
+  member: TeamMember | null;
+  onClose: () => void;
+  onSuccess: () => void;
+}) {
+  const [name, setName] = useState(member?.name || "");
+  const [role, setRole] = useState(member?.role || "");
+  const [quote, setQuote] = useState(member?.quote || "");
+  const [photo, setPhoto] = useState(member?.photo || "");
+  const [displayOrder, setDisplayOrder] = useState(member?.display_order?.toString() || "0");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+
+    try {
+      const url = member ? `/api/team-members/${member.id}` : "/api/team-members";
+      const method = member ? "PUT" : "POST";
+
+      const res = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name,
+          role,
+          quote: quote || null,
+          photo: photo || null,
+          display_order: parseInt(displayOrder) || 0,
+        }),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || "Ошибка при сохранении");
+      }
+
+      onSuccess();
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div 
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      style={{ 
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+      }}
+      onClick={(e) => {
+        if (e.target === e.currentTarget) {
+          onClose();
+        }
+      }}
+    >
+      <div 
+        className="w-full max-w-2xl rounded-[28px] border border-[#475C8C]/20 bg-white shadow-[var(--shadow-card)] flex flex-col"
+        style={{
+          maxHeight: '90vh',
+          height: 'auto'
+        }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Заголовок - закреплен */}
+        <div className="flex-shrink-0 bg-white rounded-t-[28px] px-6 pt-6 pb-4 border-b border-[#475C8C]/10">
+          <div className="flex items-center justify-between">
+            <h2 className="text-2xl font-semibold text-[#121420]">
+              {member ? "Редактировать члена команды" : "Добавить члена команды"}
+            </h2>
+            <button
+              type="button"
+              onClick={onClose}
+              className="rounded-full p-2 text-[#4a4e65] hover:bg-[#475C8C]/10 transition-colors flex-shrink-0"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+
+        {/* Контент - прокручиваемый */}
+        <div 
+          className="flex-1 overflow-y-auto px-6"
+          style={{ 
+            WebkitOverflowScrolling: 'touch',
+            minHeight: 0,
+            maxHeight: 'calc(90vh - 140px)'
+          }}
+        >
+          {error && (
+            <div className="mt-4 mb-4 rounded-[16px] bg-red-50 p-4 text-sm text-red-600">{error}</div>
+          )}
+
+          <form id="team-member-form" onSubmit={handleSubmit} className="space-y-4 py-4">
+          <div>
+            <label className="mb-2 block text-sm font-medium text-[#121420]">Имя *</label>
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+              className="w-full rounded-[16px] border border-[#475C8C]/20 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#475C8C]"
+            />
+          </div>
+
+          <div>
+            <label className="mb-2 block text-sm font-medium text-[#121420]">Роль *</label>
+            <input
+              type="text"
+              value={role}
+              onChange={(e) => setRole(e.target.value)}
+              required
+              className="w-full rounded-[16px] border border-[#475C8C]/20 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#475C8C]"
+            />
+          </div>
+
+          <div>
+            <label className="mb-2 block text-sm font-medium text-[#121420]">Цитата</label>
+            <textarea
+              value={quote}
+              onChange={(e) => setQuote(e.target.value)}
+              rows={3}
+              className="w-full rounded-[16px] border border-[#475C8C]/20 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#475C8C]"
+            />
+          </div>
+
+          <div>
+            <label className="mb-2 block text-sm font-medium text-[#121420]">Фотография</label>
+            <FileUploader
+              type="photo"
+              multiple={false}
+              onUpload={(urls) => {
+                if (urls && urls.length > 0) {
+                  setPhoto(urls[0]);
+                }
+              }}
+            />
+            {photo && (
+              <div className="mt-2">
+                <img
+                  src={photo}
+                  alt="Preview"
+                  className="h-32 w-32 rounded-[12px] object-cover"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).style.display = "none";
+                  }}
+                />
+                <button
+                  type="button"
+                  onClick={() => setPhoto("")}
+                  className="mt-2 text-sm text-red-600 hover:text-red-700"
+                >
+                  Удалить фотографию
+                </button>
+              </div>
+            )}
+            <p className="mt-1 text-xs text-[#4a4e65]">
+              Или введите URL фотографии вручную
+            </p>
+            <input
+              type="text"
+              value={photo}
+              onChange={(e) => setPhoto(e.target.value)}
+              placeholder="/team/1.jpg или URL"
+              className="mt-2 w-full rounded-[16px] border border-[#475C8C]/20 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#475C8C]"
+            />
+          </div>
+
+          <div>
+            <label className="mb-2 block text-sm font-medium text-[#121420]">Порядок отображения</label>
+            <input
+              type="number"
+              value={displayOrder}
+              onChange={(e) => setDisplayOrder(e.target.value)}
+              min="0"
+              className="w-full rounded-[16px] border border-[#475C8C]/20 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#475C8C]"
+            />
+            <p className="mt-1 text-xs text-[#4a4e65]">
+              Члены команды будут отсортированы по этому значению (меньше = выше)
+            </p>
+          </div>
+          </form>
+        </div>
+
+        {/* Футер с кнопками - закреплен */}
+        <div className="flex-shrink-0 bg-white rounded-b-[28px] px-6 py-4 border-t border-[#475C8C]/10">
+          <div className="flex gap-4">
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex-1 rounded-full border border-[#475C8C]/20 px-4 py-2 text-sm font-medium text-[#475C8C] hover:bg-[#475C8C]/10"
+            >
+              Отмена
+            </button>
+            <button
+              type="submit"
+              form="team-member-form"
+              disabled={loading}
+              className="flex-1 rounded-full bg-[#475C8C] px-4 py-2 text-sm font-medium text-white hover:bg-[#475C8C]/90 disabled:opacity-50"
+            >
+              {loading ? "Сохранение..." : "Сохранить"}
+            </button>
+          </div>
         </div>
       </div>
     </div>

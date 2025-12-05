@@ -410,4 +410,4 @@ docker-compose -f docker-compose.prod.yml logs -f app
 
 
 
-!!! certbot --nginx -d oktour.travel -d www.oktour.travel --expand
+!!! certbot --nginx -d oktour.travel

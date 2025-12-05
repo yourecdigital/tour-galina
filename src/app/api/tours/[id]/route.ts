@@ -60,7 +60,7 @@ export async function PUT(
 
     const { id } = await params;
     const data = await request.json();
-    const { title, description, price, image_url, photos, videos, category_id, duration, location } = data;
+    const { title, description, price, image_url, photos, videos, category_id, subcategory_id, duration, location } = data;
 
     if (!title) {
       return NextResponse.json(
@@ -83,7 +83,7 @@ export async function PUT(
     const videosJson = videos && Array.isArray(videos) ? JSON.stringify(videos) : null;
 
     db.prepare(
-      "UPDATE tours SET title = ?, description = ?, price = ?, image_url = ?, photos = ?, videos = ?, category_id = ?, duration = ?, location = ?, slug = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?"
+      "UPDATE tours SET title = ?, description = ?, price = ?, image_url = ?, photos = ?, videos = ?, category_id = ?, subcategory_id = ?, duration = ?, location = ?, slug = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?"
     ).run(
       title,
       description || null,
@@ -92,6 +92,7 @@ export async function PUT(
       photosJson,
       videosJson,
       category_id || null,
+      subcategory_id || null,
       duration || null,
       location || null,
       slug,

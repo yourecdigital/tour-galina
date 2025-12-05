@@ -9,6 +9,7 @@ export interface Tour {
   photos: string[] | null;
   videos: string[] | null;
   category_id: number | null;
+  subcategory_id: number | null;
   duration: string | null;
   location: string | null;
   slug: string | null;
